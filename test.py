@@ -1,15 +1,18 @@
-def add(a, b):
-    return a + b
+from AI_project1 import A_star
 
 
-def test_add():
-    assert add(2, 3) == 5
-    assert add('space', 'ship') == 'spaceship'
+def test_normal():
+    assert A_star((3,2,3),2) == 2
+    assert A_star((2,5,6,72),143) == 7
 
 
-def subtract(a, b):
-    return a - b
+def test_impossible():
+    assert A_star((3,6),2) == -1
+    assert A_star((2),143) == -1
 
 
-def test_subtract():
-    assert subtract(2, 3) == -1
+
+    
+
+
+
