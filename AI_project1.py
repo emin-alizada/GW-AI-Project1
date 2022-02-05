@@ -1,14 +1,41 @@
 import sys
+import math
 
 inf = sys.maxsize
 
 pitchers = list(map(int, input().split(',')))
 target = int(input())
 
+# def heruistic(state, target):
+#     diff = math.ceil(abs(target - state[-1][0]) * 2 / max(pitchers))
+#     return diff
 
 def heruistic(state, target):
-    diff = abs(target - state[-1][0]) * 2 / max(pitchers)
-    return diff
+    h = 0
+    diff = target - state[-1][0]
+    if diff == 0:
+        return 0
+    elif diff in [w for w, c in state]:
+        return 1
+    elif diff in [c for w, c in state]:
+        return 2
+    elif -diff in [c - w for w, c in state]:
+        return 1
+    elif -diff in [c for w, c in state]:
+        return 2
+
+    diff = abs(diff)
+
+    for c in reversed(sorted(pitchers)):
+        h += (diff // c) * 2
+        if diff % c <= (c - diff % c):
+            diff = diff % c
+        else :
+            diff = c - diff % c
+            h += 2
+    if diff > 0:
+        return h + 2
+    return h
 
 
 def get_next_state(p):
@@ -21,13 +48,15 @@ def get_next_state(p):
                 yield tuple(p_new)
 
 
-def print_path(came_from, state, f_score, g_score, h_score):
+def print_path(came_from, state):
     if came_from[state] != -1:
-        print_path(came_from, came_from[state], f_score, g_score, h_score)
-    print(state, "g=", g_score[state], "h=", h_score[state], "f=", f_score[state])
+        print_path(came_from, came_from[state])
+    print(state)
 
 
 def A_star(pitchers, target):
+    if target % math.gcd(*pitchers) != 0:
+        return -1
     state = tuple([(inf, inf)] + [(0, capacity) for capacity in pitchers] + [(0, inf)])
     f_score = {}
     g_score = {}
@@ -41,15 +70,12 @@ def A_star(pitchers, target):
     closedSet = set()
     openSet = set()
     openSet.add((f_score[state], h_score[state], state))
-    state_no = 0
     while len(openSet) > 0:
         _, _, cur = min(openSet)
         openSet.remove(min(openSet))
-        # print(cur, "g=", g_score[cur], "h=", h_score[cur], "f=", f_score[cur])
+        print(cur, "g=", g_score[cur], "h=", h_score[cur], "f=", f_score[cur])
         if cur[-1][0] == target:
-            # print('Number of states evaluated: ', state_no)
-            # print("__________________________________________________________________________________")
-            # print_path(came_from, cur, f_score, g_score, h_score)
+            print_path(came_from, cur)
             return g_score[cur]
             break
         closedSet.add(cur)
@@ -63,7 +89,6 @@ def A_star(pitchers, target):
                     f_score[next_state] = g_score[next_state] + h_score[next_state]
                     came_from[next_state] = cur
                     openSet.add((f_score[next_state], h_score[next_state], next_state))
-        state_no = state_no + 1
 
 
 if __name__ == '__main__':
