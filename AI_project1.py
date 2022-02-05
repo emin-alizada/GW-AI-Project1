@@ -47,9 +47,9 @@ def A_star(pitchers, target):
         openSet.remove(min(openSet))
         # print(cur, "g=", g_score[cur], "h=", h_score[cur], "f=", f_score[cur])
         if cur[-1][0] == target:
-            print('Number of states evaluated: ', state_no)
-            print("__________________________________________________________________________________")
-            print_path(came_from, cur, f_score, g_score, h_score)
+            # print('Number of states evaluated: ', state_no)
+            # print("__________________________________________________________________________________")
+            # print_path(came_from, cur, f_score, g_score, h_score)
             return g_score[cur]
             break
         closedSet.add(cur)
