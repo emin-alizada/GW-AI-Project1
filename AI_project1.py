@@ -7,14 +7,8 @@ target = int(input())
 
 
 def heruistic(state, target):
-    h = 0
-    diff = abs(target - state[-1][0])
-    for c in reversed(sorted(pitchers)):
-        h += diff // c
-        diff = diff % c
-    if diff > 0:
-        h += 2
-    return h
+    diff = abs(target - state[-1][0]) * 2 / max(pitchers)
+    return diff
 
 
 def get_next_state(p):
@@ -27,10 +21,10 @@ def get_next_state(p):
                 yield tuple(p_new)
 
 
-def print_path(came_from, state):
+def print_path(came_from, state, f_score, g_score, h_score):
     if came_from[state] != -1:
-        print_path(came_from, came_from[state])
-    print(state)
+        print_path(came_from, came_from[state], f_score, g_score, h_score)
+    print(state, "g=", g_score[state], "h=", h_score[state], "f=", f_score[state])
 
 
 def A_star(pitchers, target):
@@ -47,12 +41,15 @@ def A_star(pitchers, target):
     closedSet = set()
     openSet = set()
     openSet.add((f_score[state], h_score[state], state))
+    state_no = 0
     while len(openSet) > 0:
         _, _, cur = min(openSet)
         openSet.remove(min(openSet))
         # print(cur, "g=", g_score[cur], "h=", h_score[cur], "f=", f_score[cur])
         if cur[-1][0] == target:
-            # print_path(came_from, cur)
+            print('Number of states evaluated: ', state_no)
+            print("__________________________________________________________________________________")
+            print_path(came_from, cur, f_score, g_score, h_score)
             return g_score[cur]
             break
         closedSet.add(cur)
@@ -66,7 +63,8 @@ def A_star(pitchers, target):
                     f_score[next_state] = g_score[next_state] + h_score[next_state]
                     came_from[next_state] = cur
                     openSet.add((f_score[next_state], h_score[next_state], next_state))
+        state_no = state_no + 1
 
 
 if __name__ == '__main__':
-    A_star(pitchers, target)
+    print(A_star(pitchers, target))
