@@ -5,6 +5,7 @@ def test_normal():
     assert A_star((3, 2, 3), 2) == 2
     assert A_star((2, 5, 6, 72), 143) == 7
     assert A_star((3, 10, 15), 18) == 4
+    assert A_star((3, 5), 4) == 7
 
 
 def test_impossible():
