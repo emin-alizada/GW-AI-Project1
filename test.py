@@ -8,7 +8,7 @@ def test_normal():
 
 def test_impossible():
     assert A_star((3,6),2) == -1
-    assert A_star((2),143) == -1
+    assert A_star((2,),143) == -1
 
 
 
