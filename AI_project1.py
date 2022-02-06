@@ -4,7 +4,7 @@ from math import ceil
 inf = sys.maxsize
 
 
-def heruistic(state, target):
+def heruistic(state, target, pitchers):
     diff = ceil(abs(target - state[-1][0]) * 2 // max(pitchers))
     return diff
 
@@ -32,7 +32,7 @@ def A_star(pitchers, target):
     h_score = {}
     came_from = {state: -1}
 
-    h_score[state] = heruistic(state, target)
+    h_score[state] = heruistic(state, target, pitchers)
     g_score[state] = 0
     f_score[state] = h_score[state] + g_score[state]
 
@@ -57,7 +57,7 @@ def A_star(pitchers, target):
                 if g_tentative < g_score.get(next_state, inf):
                     openSet.discard((f_score.get(next_state), h_score.get(next_state), next_state))
                     g_score[next_state] = g_tentative
-                    h_score[next_state] = heruistic(next_state, target)
+                    h_score[next_state] = heruistic(next_state, target, pitchers)
                     f_score[next_state] = g_score[next_state] + h_score[next_state]
                     came_from[next_state] = cur
                     openSet.add((f_score[next_state], h_score[next_state], next_state))
