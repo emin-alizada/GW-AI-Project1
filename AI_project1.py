@@ -51,7 +51,6 @@ def A_star(pitchers, target):
             print("__________________________________________________________________________________")
             print_path(came_from, cur, f_score, g_score, h_score)
             return g_score[cur]
-            break
         closedSet.add(cur)
         for next_state in get_next_state(cur):
             if not next_state in closedSet:
