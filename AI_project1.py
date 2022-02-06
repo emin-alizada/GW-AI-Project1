@@ -1,5 +1,5 @@
 import sys
-from math import ceil
+from math import ceil, gcd
 
 inf = sys.maxsize
 
@@ -26,6 +26,8 @@ def print_path(came_from, state, f_score, g_score, h_score):
 
 
 def A_star(pitchers, target):
+    if target % gcd(*pitchers) != 0:
+        return -1
     state = tuple([(inf, inf)] + [(0, capacity) for capacity in pitchers] + [(0, inf)])
     f_score = {}
     g_score = {}
