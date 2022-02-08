@@ -26,7 +26,7 @@ We also check if we have reached the next step of our current state before, and 
 ## Heuristic 
 
 The heuristic we selected is a simple one:
-- Calculate the absolute value of the distance between the target value and amount of water contained in our target pitcher
+- Calculate the absolute value of the distance between the target value and the amount of water contained in our target pitcher
 - Divide the result by the capacity of the pitcher with a maximum capacity
 - Multiply it by 2 to account for emptying the pitcher to infinite pitcher
 
