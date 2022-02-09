@@ -1,5 +1,6 @@
 import sys
 from math import ceil, gcd
+import heapq, functools
 
 inf = sys.maxsize
 
@@ -26,25 +27,23 @@ def print_path(came_from, state, f_score, g_score, h_score):
 
 
 def A_star(pitchers, target):
-    if target % gcd(*pitchers) != 0:
+    if target % functools.reduce(gcd, pitchers) != 0:
         return -1
     state = tuple([(inf, inf)] + [(0, capacity) for capacity in pitchers] + [(0, inf)])
     f_score = {}
     g_score = {}
     h_score = {}
     came_from = {state: -1}
-
     h_score[state] = heruistic(state, target, pitchers)
     g_score[state] = 0
     f_score[state] = h_score[state] + g_score[state]
-
     closedSet = set()
-    openSet = set()
-    openSet.add((f_score[state], h_score[state], state))
+    openSet = []
+    heapq.heapify(openSet)
+    heapq.heappush(openSet, (f_score[state], h_score[state], state))
     state_no = 0
     while len(openSet) > 0:
-        _, _, cur = min(openSet)
-        openSet.remove(min(openSet))
+        _, _, cur = heapq.heappop(openSet)
         print(cur, "g=", g_score[cur], "h=", h_score[cur], "f=", f_score[cur])
         if cur[-1][0] == target:
             print('Number of states evaluated: ', state_no)
@@ -56,12 +55,18 @@ def A_star(pitchers, target):
             if not next_state in closedSet:
                 g_tentative = g_score[cur] + 1
                 if g_tentative < g_score.get(next_state, inf):
-                    openSet.discard((f_score.get(next_state), h_score.get(next_state), next_state))
+                    try:
+                        idx = openSet.index((f_score.get(next_state), h_score.get(next_state), next_state))
+                        openSet[idx] = openSet[-1]
+                        openSet.pop()
+                        heapq.heapify(openSet)
+                    except:
+                        pass
                     g_score[next_state] = g_tentative
                     h_score[next_state] = heruistic(next_state, target, pitchers)
                     f_score[next_state] = g_score[next_state] + h_score[next_state]
                     came_from[next_state] = cur
-                    openSet.add((f_score[next_state], h_score[next_state], next_state))
+                    heapq.heappush(openSet, (f_score[next_state], h_score[next_state], next_state))
         state_no = state_no + 1
 
 
