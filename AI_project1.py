@@ -11,6 +11,9 @@ def heuristic(state, target, max_pitcher):
     return diff
 
 
+# Iterates through the pitchers
+# to find out every possible state
+# from the current state
 def get_next_state(state):
     for i, pitchers_i in enumerate(state):
         for j, pitchers_j in enumerate(state):
