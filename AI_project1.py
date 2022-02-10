@@ -6,8 +6,8 @@ from math import ceil, gcd
 inf = sys.maxsize
 
 
-def heuristic(state, target, pitchers):
-    diff = ceil(abs(target - state[-1][0]) * 2 // max(pitchers))
+def heuristic(state, target, max_pitcher):
+    diff = ceil(abs(target - state[-1][0]) * 2 // max_pitcher)
     return diff
 
 
@@ -30,12 +30,13 @@ def print_path(came_from, state, f_score, g_score, h_score):
 def A_star(pitchers, target):
     if target % functools.reduce(gcd, pitchers) != 0:
         return -1
+    max_pitcher = max(pitchers)
     state = tuple([(inf, inf)] + [(0, capacity) for capacity in pitchers] + [(0, inf)])
     f_score = {}
     g_score = {}
     h_score = {}
     came_from = {state: -1}
-    h_score[state] = heuristic(state, target, pitchers)
+    h_score[state] = heuristic(state, target, max_pitcher)
     g_score[state] = 0
     f_score[state] = h_score[state] + g_score[state]
     closed_set = set()
@@ -64,7 +65,7 @@ def A_star(pitchers, target):
                     except:
                         pass
                     g_score[next_state] = g_tentative
-                    h_score[next_state] = heuristic(next_state, target, pitchers)
+                    h_score[next_state] = heuristic(next_state, target, max_pitcher)
                     f_score[next_state] = g_score[next_state] + h_score[next_state]
                     came_from[next_state] = cur
                     heapq.heappush(open_set, (f_score[next_state], h_score[next_state], next_state))
