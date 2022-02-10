@@ -1,23 +1,27 @@
 import sys
+import heapq
+import functools
 from math import ceil, gcd
-import heapq, functools
 
 inf = sys.maxsize
 
 
-def heruistic(state, target, pitchers):
-    diff = ceil(abs(target - state[-1][0]) * 2 // max(pitchers))
+def heuristic(state, target, max_pitcher):
+    diff = ceil(abs(target - state[-1][0]) * 2 // max_pitcher)
     return diff
 
 
-def get_next_state(p):
-    for i, pi in enumerate(p):
-        for j, pj in enumerate(p):
-            if (i != j) and (pj[1] > pj[0]) and pi[0] > 0:
-                p_new = list(p)
-                p_new[i] = (max([pi[0] + pj[0] - pj[1], 0]), pi[1])
-                p_new[j] = (min([pi[0] + pj[0], pj[1]]), pj[1])
-                yield tuple(p_new)
+# Iterates through the pitchers
+# to find out every possible state
+# from the current state
+def get_next_state(state):
+    for i, pitchers_i in enumerate(state):
+        for j, pitchers_j in enumerate(state):
+            if (i != j) and (pitchers_j[1] > pitchers_j[0]) and pitchers_i[0] > 0:
+                next_state = list(state)
+                next_state[i] = (max([pitchers_i[0] + pitchers_j[0] - pitchers_j[1], 0]), pitchers_i[1])
+                next_state[j] = (min([pitchers_i[0] + pitchers_j[0], pitchers_j[1]]), pitchers_j[1])
+                yield tuple(next_state)
 
 
 def print_path(came_from, state, f_score, g_score, h_score):
@@ -29,44 +33,45 @@ def print_path(came_from, state, f_score, g_score, h_score):
 def A_star(pitchers, target):
     if target % functools.reduce(gcd, pitchers) != 0:
         return -1
+    max_pitcher = max(pitchers)
     state = tuple([(inf, inf)] + [(0, capacity) for capacity in pitchers] + [(0, inf)])
     f_score = {}
     g_score = {}
     h_score = {}
     came_from = {state: -1}
-    h_score[state] = heruistic(state, target, pitchers)
+    h_score[state] = heuristic(state, target, max_pitcher)
     g_score[state] = 0
     f_score[state] = h_score[state] + g_score[state]
-    closedSet = set()
-    openSet = []
-    heapq.heapify(openSet)
-    heapq.heappush(openSet, (f_score[state], h_score[state], state))
+    closed_set = set()
+    open_set = []
+    heapq.heapify(open_set)
+    heapq.heappush(open_set, (f_score[state], h_score[state], state))
     state_no = 0
-    while len(openSet) > 0:
-        _, _, cur = heapq.heappop(openSet)
+    while len(open_set) > 0:
+        _, _, cur = heapq.heappop(open_set)
         print(cur, "g=", g_score[cur], "h=", h_score[cur], "f=", f_score[cur])
         if cur[-1][0] == target:
             print('Number of states evaluated: ', state_no)
             print("__________________________________________________________________________________")
             print_path(came_from, cur, f_score, g_score, h_score)
             return g_score[cur]
-        closedSet.add(cur)
+        closed_set.add(cur)
         for next_state in get_next_state(cur):
-            if not next_state in closedSet:
+            if not next_state in closed_set:
                 g_tentative = g_score[cur] + 1
                 if g_tentative < g_score.get(next_state, inf):
                     try:
-                        idx = openSet.index((f_score.get(next_state), h_score.get(next_state), next_state))
-                        openSet[idx] = openSet[-1]
-                        openSet.pop()
-                        heapq.heapify(openSet)
+                        idx = open_set.index((f_score.get(next_state), h_score.get(next_state), next_state))
+                        open_set[idx] = open_set[-1]
+                        open_set.pop()
+                        heapq.heapify(open_set)
                     except:
                         pass
                     g_score[next_state] = g_tentative
-                    h_score[next_state] = heruistic(next_state, target, pitchers)
+                    h_score[next_state] = heuristic(next_state, target, max_pitcher)
                     f_score[next_state] = g_score[next_state] + h_score[next_state]
                     came_from[next_state] = cur
-                    heapq.heappush(openSet, (f_score[next_state], h_score[next_state], next_state))
+                    heapq.heappush(open_set, (f_score[next_state], h_score[next_state], next_state))
         state_no = state_no + 1
 
 
