@@ -74,4 +74,5 @@ if __name__ == '__main__':
     file = open("input.txt", "r")
     pitchers = list(map(int, file.readline().split(',')))
     target = int(file.readline())
+    file.close()
     print(A_star(pitchers, target))
